@@ -1,0 +1,24 @@
+.env
+.env.*
+!.env.example
+
+# Claude Code / IDE / tooling
+.claude/
+.playwright-mcp/
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Node
+node_modules/
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
