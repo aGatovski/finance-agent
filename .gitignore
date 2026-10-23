@@ -1,8 +1,8 @@
 .env
 .env.*
 !.env.example
+*.csv
 
-# Claude Code / IDE / tooling
 .claude/
 .playwright-mcp/
 .idea/
