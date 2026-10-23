@@ -27,8 +27,6 @@ class Transaction(Base):
     merchant: Mapped[str | None] = mapped_column(String, nullable=True)
     category: Mapped[str | None] = mapped_column(String, nullable=True)
     category_src: Mapped[str | None] = mapped_column(String, nullable=True)
-    # True for card-A→card-B self transfers; analytics queries filter these out
-    # so they don't double-inflate gross income/expense (see ARCHITECTURE §6.4).
     is_internal: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     embedding: Mapped[list[float] | None] = mapped_column(Vector(768), nullable=True)
 
@@ -38,15 +36,13 @@ class MerchantData(Base):
 
     The categorizer's deterministic lookup hits this first; novel merchants are
     resolved by a batched LLM call and written back here, so the next import is a
-    free lookup (see ARCHITECTURE §6.3).
+    free lookup.
     """
 
     __tablename__ = "merchant_data"
     id: Mapped[int] = mapped_column(primary_key=True)
     merchant_name: Mapped[str] = mapped_column(String, unique=True, index=True)
     category: Mapped[str] = mapped_column(String)
-    # Learned "this merchant is a self-transfer" flag (e.g. DSK→Revolut top-ups).
-    # Imports stamp matching rows is_internal so analytics exclude them (§6.4).
     is_internal: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
 
