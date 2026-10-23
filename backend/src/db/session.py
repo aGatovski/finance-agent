@@ -5,11 +5,12 @@ from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from src.config import settings
 
-# One engine + session factory for the whole app. The engine is lazy — it
-# doesn't open a connection until a session actually runs a query, so importing
-# this module never requires Postgres to be up.
 engine = create_engine(settings.database_url, pool_pre_ping=True)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
+
+agent_engine=create_engine(settings.agent_database_url, pool_pre_ping=True)
+AgentSessionLocal  = sessionmaker(bind=agent_engine, autoflush=False, expire_on_commit=False)
+
 
 
 class Base(DeclarativeBase):
