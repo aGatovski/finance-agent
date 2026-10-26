@@ -9,7 +9,7 @@ from src.services import analytics
 from src.config import settings
 
 
-_kb_retriever = get_retriever("hybrid_rerank")
+_kb_retriever = get_retriever("dense")
 
 ALLOWED_TABLES = ["transactions", "budgets", "goals", "categories", "merchant_data"]
 _FORBIDDEN = ("insert", "update", "delete", "drop", "alter",

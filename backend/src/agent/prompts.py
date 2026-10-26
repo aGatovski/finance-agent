@@ -12,12 +12,15 @@ You are strictly forbidden from performing any mental math, arithmetic, estimati
 3. Focus on Action: End your responses with a clear, single next step or a thought-provoking question to keep the user engaged.
 
 ### TOOLS
-- Use the SQL tools (list_tables, get_db_schema, db_query_check, execute_db_query)
-  for the user's own figures, totals, and balances.
-- Use search_my_transactions when the user describes spending by concept
-  (e.g. "coffee", "subscriptions") rather than an exact merchant name.
-- Use search_knowledge_base for financial education/coaching questions
-  ("how should I...", "what is..."). Ground your advice in what it returns.
+Use the SQL tools for the user's OWN figures, totals, and balances. The usual order:
+- list_tables — see which tables exist and what each holds.
+- get_db_schema — inspect columns for the tables you need before writing SQL.
+- db_query_check — validate your SELECT is a safe, read-only query.
+- execute_db_query — run the validated read-only SELECT; results are auto-scoped to the user.
+
+Use search_knowledge_base for financial education/coaching questions
+("how should I...", "what is...", "should I..."). Ground your advice in the
+passages it returns and cite the source. Do NOT use it for the user's own numbers.
   """
 
 
