@@ -3,10 +3,13 @@ from langchain_core.runnables import RunnableConfig
 import re
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from sqlalchemy import inspect, inspect, text
-from src.db.session import AgentSessionLocal, agent_engine
+from src.rag.registry import get_retriever
+from src.db.session import AgentSessionLocal, SessionLocal, agent_engine
 from src.services import analytics
 from src.config import settings
 
+
+_kb_retriever = get_retriever("hybrid_rerank")
 
 ALLOWED_TABLES = ["transactions", "budgets", "goals", "categories", "merchant_data"]
 _FORBIDDEN = ("insert", "update", "delete", "drop", "alter",
@@ -109,7 +112,25 @@ def execute_db_query(query: str, config: RunnableConfig) -> list[dict] | str:
     except Exception as e:
         return f"Query failed: {e}"
 
-TOOLS = [list_tables, get_db_schema, db_query_check, execute_db_query]
+
+
+@tool
+def search_knowledge_base(query: str) -> str:
+    """Search the personal-finance knowledge base (budgeting, saving, debt,
+    credit, taxes, investing, consumer protection) for guidance to answer a
+    user's 'how/what/should I' question. Returns the most relevant passages.
+    Use this for financial education/coaching questions — NOT for the user's own
+    numbers (use the SQL tools for those)."""
+    with SessionLocal() as db:
+        chunks = _kb_retriever.retrieve(query, db, k=5)
+    if not chunks:
+        return "No relevant knowledge-base passages found."
+    return "\n\n".join(
+        f"[{c.source}] {c.title or ''}\n{c.content}".strip() for c in chunks
+    )
+
+
+TOOLS = [list_tables, get_db_schema, db_query_check, execute_db_query,search_knowledge_base]
 
 
 
